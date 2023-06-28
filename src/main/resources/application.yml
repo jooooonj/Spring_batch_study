@@ -1,13 +1,20 @@
 spring:
+  profiles:
+    active: dev
   batch:
     job:
-      names: ${job.name:NONE}
+      name: ${job.name:helloWorldJob}
     jdbc:
       initialize-schema: always
   datasource:
-    url: jdbc:mariadb://127.0.0.1:3306/app_2022_09_22?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
-    driver-class-name:
-    username: sbbDatabase
+    driver: org.h2.Driver
+    url: jdbc:h2:tcp://localhost/~/db/batch
+    username: sa
     password:
   jpa:
     show-sql: true
+    hibernate:
+      ddl-auto: create
+logging:
+  level:
+    com.example.demo: debug
