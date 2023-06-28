@@ -3,7 +3,7 @@ spring:
     active: dev
   batch:
     job:
-      name: ${job.name:helloWorldJob}
+      names: ${job.name:none}
     jdbc:
       initialize-schema: always
   datasource:
@@ -17,4 +17,4 @@ spring:
       ddl-auto: create
 logging:
   level:
-    com.example.demo: debug
+    spring.batch.exam: debug
