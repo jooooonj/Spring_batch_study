@@ -18,28 +18,47 @@ import org.springframework.transaction.PlatformTransactionManager;
 @RequiredArgsConstructor
 public class JobConfig {
     private final JobRepository jobRepository;
+    private final PlatformTransactionManager transactionManager;
 
     @Bean
-    public Job job(Step helloWorldStep) {
+    public Job job() {
         return new JobBuilder("helloWorldJob", jobRepository)
                 .incrementer(new RunIdIncrementer())
-                .start(helloWorldStep)
+                .start(helloWorldStep1())
+                .next(helloWorldStep2())
                 .build();
     }
 
     @Bean
     @JobScope
-    public Step helloWorldStep(Tasklet helloWorldStepTasklet, PlatformTransactionManager transactionManager) {
-        return new StepBuilder("helloWorldStep", jobRepository)
-                .tasklet(helloWorldStepTasklet, transactionManager)
+    public Step helloWorldStep1() {
+        return new StepBuilder("helloWorld1Step", jobRepository)
+                .tasklet(helloWorldStep1Tasklet(), transactionManager)
                 .build();
     }
 
     @Bean
     @StepScope
-    public Tasklet helloWorldStepTasklet() {
+    public Tasklet helloWorldStep1Tasklet() {
         return (contribution, chunkContext) -> {
-            System.out.println("Hello World!");
+            System.out.println("Hello World one!");
+            return RepeatStatus.FINISHED;
+        };
+    }
+
+    @Bean
+    @JobScope
+    public Step helloWorldStep2() {
+        return new StepBuilder("helloWorld2Step", jobRepository)
+                .tasklet(helloWorldStep2Tasklet(), transactionManager)
+                .build();
+    }
+
+    @Bean
+    @StepScope
+    public Tasklet helloWorldStep2Tasklet() {
+        return (contribution, chunkContext) -> {
+            System.out.println("Hello World two!");
             return RepeatStatus.FINISHED;
         };
     }
