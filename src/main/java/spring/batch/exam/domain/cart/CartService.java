@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import spring.batch.exam.domain.member.Member;
 import spring.batch.exam.domain.product.ProductOption;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CartService {
@@ -25,5 +27,13 @@ public class CartService {
                 .quantity(quantity)
                 .build();
         return cartItemRepository.save(cartItem);
+    }
+
+    public List<CartItem> getItemsByMember(Member member) {
+        return cartItemRepository.findAllByMemberId(member.getId());
+    }
+
+    public void deleteItem(CartItem cartItem) {
+        cartItemRepository.delete(cartItem);
     }
 }
