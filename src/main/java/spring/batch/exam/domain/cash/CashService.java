@@ -9,10 +9,11 @@ import spring.batch.exam.domain.member.Member;
 public class CashService {
     private final CashLogRepository cashLogRepository;
 
-    public CashLog addCash(Member member, long price) {
+    public CashLog addCash(Member member, long price, String eventType) {
         CashLog cashLog = CashLog.builder()
                 .member(member)
                 .price(price)
+                .eventType(eventType)
                 .build();
 
         cashLogRepository.save(cashLog);
