@@ -3,8 +3,8 @@ spring:
     active: dev
   batch:
     job:
-      names: ${job.name:none}
-      enabled: false
+      name: ${job.name:none}
+      enabled: true
     jdbc:
       initialize-schema: always
   datasource:

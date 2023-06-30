@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -15,6 +16,7 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.data.RepositoryItemReader;
 import org.springframework.batch.item.data.builder.RepositoryItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
@@ -32,14 +34,14 @@ import java.util.Collections;
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
-public class MakeRebateOrderItemJobConfig {
+public class MakeRebateOrderItemJobConfig{
     private final JobRepository jobRepository;
     private final OrderItemRepository orderItemRepository;
     private final RebateOrderItemRepository rebateOrderItemRepository;
 
 
     @Bean
-    public Job makeRebateDataJob(Step makeRebateDataStep1) {
+    public Job makeRebateDataJob(Step makeRebateDataStep1) throws Exception {
         return new JobBuilder("makeRebateDataJob", jobRepository)
                 .start(makeRebateDataStep1)
                 .build();
@@ -66,6 +68,7 @@ public class MakeRebateOrderItemJobConfig {
     public RepositoryItemReader<OrderItem> orderItemReader(
             @Value("#{jobParameters['yearMonth']}") String yearMonth
     ) {
+        yearMonth = "2023-06";
         int monthEndDay = Ut.date.getEndDayOf(yearMonth);
         LocalDateTime fromDate = Ut.date.parse(yearMonth + "-01 00:00:00.000000");
         LocalDateTime toDate = Ut.date.parse(yearMonth + "-%02d 23:59:59.999999".formatted(monthEndDay));
