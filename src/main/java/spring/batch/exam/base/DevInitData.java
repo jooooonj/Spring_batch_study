@@ -13,6 +13,7 @@ import spring.batch.exam.domain.order.OrderService;
 import spring.batch.exam.domain.product.Product;
 import spring.batch.exam.domain.product.ProductOption;
 import spring.batch.exam.domain.product.ProductService;
+import spring.batch.exam.job.JobConfig;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.List;
 public class DevInitData {
     private boolean initDataDone = false;
     @Bean
-    public CommandLineRunner initData(MemberService memberService, ProductService productService, CartService cartService, OrderService orderService) {
+    public CommandLineRunner initData(JobConfig jobConfig, MemberService memberService, ProductService productService, CartService cartService, OrderService orderService) {
         return args ->
         {
             if (initDataDone) return;
@@ -123,6 +124,8 @@ public class DevInitData {
                     )
             );
             orderService.payByRestCashOnly(order4);
+
+            jobConfig.performMakeRebateDataJob();
         };
     }
 }

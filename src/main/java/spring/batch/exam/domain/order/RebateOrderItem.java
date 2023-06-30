@@ -2,6 +2,7 @@ package spring.batch.exam.domain.order;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,8 +10,6 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import spring.batch.exam.domain.base.BaseEntity;
 import spring.batch.exam.domain.product.ProductOption;
-
-import java.time.LocalDateTime;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -20,7 +19,11 @@ import static jakarta.persistence.FetchType.LAZY;
 @NoArgsConstructor
 @SuperBuilder
 @ToString(callSuper = true)
-public class OrderItem extends BaseEntity {
+public class RebateOrderItem extends BaseEntity {
+    @OneToOne(fetch = LAZY)
+    @ToString.Exclude
+    private OrderItem orderItem;
+
     @ManyToOne(fetch = LAZY)
     @ToString.Exclude
     private Order order;
@@ -28,8 +31,9 @@ public class OrderItem extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     private ProductOption productOption;
 
-    private LocalDateTime payDate;
     private int quantity;
+
+    // 가격
     private int price; // 권장판매가
     private int salePrice; // 실제판매가
     private int wholesalePrice; // 도매가
@@ -39,8 +43,22 @@ public class OrderItem extends BaseEntity {
     private int refundQuantity; // 환불한 개수
     private boolean isPaid; // 결제여부
 
+    public RebateOrderItem(OrderItem orderItem) {
+        this.orderItem = orderItem;
+        order = orderItem.getOrder();
+        productOption = orderItem.getProductOption();
+        quantity = orderItem.getQuantity();
+        price = orderItem.getPrice();
+        salePrice = orderItem.getSalePrice();
+        wholesalePrice = orderItem.getWholesalePrice();
+        pgFee = orderItem.getPgFee();
+        payPrice = orderItem.getPrice();
+        refundPrice = orderItem.getRefundPrice();
+        refundQuantity = orderItem.getRefundQuantity();
+        isPaid = orderItem.isPaid();
+    }
 
-    public OrderItem(ProductOption productOption, int quantity) {
+    public RebateOrderItem(ProductOption productOption, int quantity) {
         this.productOption = productOption;
         this.quantity = quantity;
         this.price = productOption.getPrice();
@@ -49,21 +67,23 @@ public class OrderItem extends BaseEntity {
     }
 
     public int calculatePayPrice() {
-        return getSalePrice() * getQuantity();
+        return salePrice * quantity;
     }
 
     public void setPaymentDone() {
         this.pgFee = 0;
         this.payPrice = calculatePayPrice();
         this.isPaid = true;
-        this.payDate = LocalDateTime.now();
     }
 
     public void setRefundDone() {
-        if ( refundQuantity == quantity ) return;
+        if (refundQuantity == quantity) return;
 
         this.refundQuantity = quantity;
         this.refundPrice = payPrice;
     }
 
+    public boolean isRebateDone() {
+        return true;
+    }
 }

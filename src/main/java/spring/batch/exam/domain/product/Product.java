@@ -26,6 +26,8 @@ public class Product extends BaseEntity {
 
     private String name;
     private String makerShopName;
+    private boolean isSoldOut; // 관련 옵션들이 전부 판매불능 상태일 때
+
 
     @Builder.Default
     @OneToMany(mappedBy = "product", cascade = ALL, orphanRemoval = true)
@@ -39,4 +41,5 @@ public class Product extends BaseEntity {
 
         productOptions.add(option);
     }
+
 }
